@@ -7,7 +7,7 @@ openai.api_key = st.secrets['idearefiner']['OPENAI_API_KEY']
 
 def generate_metrics(theme):
     prompt = f"""
-        以下の課題「{theme}」に対して策定された戦略を、多方面から評価します。まずは戦略の良し悪しを評価するために考慮すべきポイント5つ、列記してください。
+        以下の課題「{theme}」に対して策定されたアイデアを、多方面から評価します。まずはアイデアや戦略の良し悪しを評価するために考慮すべきポイント5つ、列記してください。
         各ポイントは1行で簡潔に表現し、説明は一切不要です。
         """
     response = openai.chat.completions.create(
@@ -45,7 +45,7 @@ def refine_metrics(theme, ideas, evaluations, current_metrics):
        current_metrics_str = "\n".join(current_metrics)
        
        prompt = f"""
-                   テーマ「{theme}」に関する以下のアイデアと評価、および現在の評価指標を考慮して、より適切な5つの新しい評価指標を生成してください。
+                   テーマ「{theme}」に関する以下のアイデアと評価を考慮して、現在の評価指標を適宜修正し、5つの新しい評価指標を生成してください。
                    各指標は1行で簡潔に表現し、説明は一切不要です。
                    
                    現在の評価指標:
