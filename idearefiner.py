@@ -70,20 +70,20 @@ def refine_metrics(theme, ideas, evaluations, current_metrics):
        return prompt, new_metrics[:5]  # プロンプトと最大5つの新しいメトリクスを返す
 
 def main():
+def main():
     st.title("Strategy Refiner")
 
     # セッション状態の初期化
     if 'theme' not in st.session_state:
         st.session_state.theme = ""
     if 'metrics' not in st.session_state:
-        st.session_state.metrics = [""] * 5  # 確実に5つの空文字列で初期化
+        st.session_state.metrics = [""] * 5
     if 'ideas' not in st.session_state:
         st.session_state.ideas = [""] * 5
     if 'evaluations' not in st.session_state:
         st.session_state.evaluations = [0] * 5
-
-    # メトリクスが5つになるように調整
-    st.session_state.metrics = (st.session_state.metrics + [""] * 5)[:5]
+    if 'prompt' not in st.session_state:
+        st.session_state.prompt = ""
 
     # テーマ入力
     st.session_state.theme = st.text_input("Theme", st.session_state.theme)
@@ -93,19 +93,21 @@ def main():
         if st.session_state.theme:
             with st.spinner("指標を生成中..."):
                 st.session_state.metrics = generate_metrics(st.session_state.theme)
+            st.success("評価軸が生成されました。")
         else:
             st.warning("テーマを入力してください。")
 
     # 評価指標の表示と編集
     st.subheader("評価指標")
     for i in range(5):
-        st.session_state.metrics[i] = st.text_input(f"Metrics {i+1}", st.session_state.metrics[i])
+        st.session_state.metrics[i] = st.text_input(f"Metrics {i+1}", st.session_state.metrics[i], key=f"metric_{i}")
 
     # アイデア生成ボタン
     if st.button("アイデア生成"):
         if st.session_state.theme and any(st.session_state.metrics):
             with st.spinner("アイデアを生成中..."):
                 st.session_state.ideas = generate_ideas(st.session_state.theme, st.session_state.metrics)
+            st.success("アイデアが生成されました。")
         else:
             st.warning("テーマと少なくとも1つの評価指標を入力してください。")
 
@@ -114,26 +116,20 @@ def main():
     for i in range(5):
         col1, col2 = st.columns([3, 1])
         with col1:
-            st.session_state.ideas[i] = st.text_area(f"Idea {i+1}", st.session_state.ideas[i], height=100)
+            st.session_state.ideas[i] = st.text_area(f"Idea {i+1}", st.session_state.ideas[i], height=100, key=f"idea_{i}")
         with col2:
-            st.session_state.evaluations[i] = st.number_input(f"評価 {i+1}", min_value=0, max_value=10, value=st.session_state.evaluations[i], step=1)
+            st.session_state.evaluations[i] = st.number_input(f"評価 {i+1}", min_value=0, max_value=10, value=st.session_state.evaluations[i], step=1, key=f"eval_{i}")
 
-    # プロンプト用のセッション状態を初期化
-    if 'prompt' not in st.session_state:
-        st.session_state.prompt = ""
-        
     # 評価軸修正ボタン
     if st.button("評価軸修正"):
         if st.session_state.theme and any(st.session_state.ideas) and any(st.session_state.evaluations):
             with st.spinner("評価軸を修正中..."):
                 prompt, new_metrics = refine_metrics(st.session_state.theme, st.session_state.ideas, st.session_state.evaluations, st.session_state.metrics)
-                st.session_state.metrics = new_metrics  # new_metricsは既に最大5つの要素を持つリストです
-                st.session_state.prompt = prompt  # プロンプトをセッション状態に保存
-            
-            st.success("評価軸が更新されました。上部の「評価指標」セクションが自動的に更新されています。")
-            st.experimental_rerun()  # Streamlitアプリを再実行して更新を反映
+                st.session_state.metrics = new_metrics
+                st.session_state.prompt = prompt
+            st.success("評価軸が更新されました。")
         else:
-            st.warning("テーマ、アイデア、評価が必要です。")        
+            st.warning("テーマ、アイデア、評価が必要です。")   
 
     st.markdown("---")
     st.caption("注意: このアプリケーションを使用するには、有効なOpenAI APIキーが必要です。")
