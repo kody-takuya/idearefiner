@@ -83,6 +83,8 @@ def main():
         st.session_state.evaluations = [0] * 5
     if 'prompt' not in st.session_state:
         st.session_state.prompt = ""
+    if 'metrics_updated' not in st.session_state:
+        st.session_state.metrics_updated = False
 
     # テーマ入力
     st.session_state.theme = st.text_input("Theme", st.session_state.theme)
@@ -93,13 +95,16 @@ def main():
             with st.spinner("指標を生成中..."):
                 st.session_state.metrics = generate_metrics(st.session_state.theme)
             st.success("評価軸が生成されました。")
+            st.session_state.metrics_updated = True
         else:
             st.warning("テーマを入力してください。")
 
     # 評価指標の表示と編集
     st.subheader("評価指標")
-    for i in range(5):
-        st.session_state.metrics[i] = st.text_input(f"Metrics {i+1}", st.session_state.metrics[i], key=f"metric_{i}")
+    metrics_placeholder = st.empty()
+    with metrics_placeholder.container():
+        for i in range(5):
+            st.session_state.metrics[i] = st.text_input(f"Metrics {i+1}", st.session_state.metrics[i], key=f"metric_{i}")
 
     # アイデア生成ボタン
     if st.button("アイデア生成"):
@@ -126,9 +131,18 @@ def main():
                 prompt, new_metrics = refine_metrics(st.session_state.theme, st.session_state.ideas, st.session_state.evaluations, st.session_state.metrics)
                 st.session_state.metrics = new_metrics
                 st.session_state.prompt = prompt
+                st.session_state.metrics_updated = True
             st.success("評価軸が更新されました。")
         else:
-            st.warning("テーマ、アイデア、評価が必要です。")   
+            st.warning("テーマ、アイデア、評価が必要です。")
+
+    # 評価指標の更新（必要な場合）
+    if st.session_state.metrics_updated:
+        metrics_placeholder.empty()
+        with metrics_placeholder.container():
+            for i in range(5):
+                st.session_state.metrics[i] = st.text_input(f"Metrics {i+1}", st.session_state.metrics[i], key=f"updated_metric_{i}")
+        st.session_state.metrics_updated = False
 
     st.markdown("---")
     st.caption("注意: このアプリケーションを使用するには、有効なOpenAI APIキーが必要です。")
