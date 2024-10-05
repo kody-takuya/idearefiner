@@ -3,7 +3,7 @@ import streamlit as st
 import openai
 
 # OpenAI APIキーの設定
-openai.api_key = st.secrets['idearefiner.py']['OPENAI_API_KEY']
+openai.api_key = st.secrets['idearefiner']['OPENAI_API_KEY']
 
 def generate_metrics(theme):
     prompt = f"""
