@@ -45,7 +45,7 @@ def refine_metrics(theme, ideas, evaluations, current_metrics):
        current_metrics_str = "\n".join(current_metrics)
        
        prompt = f"""
-                   テーマ「{theme}」に関する以下のアイデアと評価を考慮して、現在の評価指標を適宜修正し、5つの新しい評価指標を生成してください。
+                   テーマ「{theme}」に関する以下のアイデアと評価を考慮して、現在の評価指標を適宜修正し、5つの新しい評価指標を生成してください。指標は具体的になりすぎてはいけません。
                    各指標は1行で簡潔に表現し、説明は一切不要です。
                    
                    現在の評価指標:
