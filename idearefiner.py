@@ -1,13 +1,9 @@
+
 import streamlit as st
 import openai
-import os
-from dotenv import load_dotenv
-
-# .envファイルから環境変数を読み込む
-load_dotenv()
 
 # OpenAI APIキーの設定
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = st.secrets['idearefiner.py']['OPENAI_API_KEY']
 
 def generate_metrics(theme):
     prompt = f"""
