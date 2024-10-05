@@ -70,7 +70,7 @@ def refine_metrics(theme, ideas, evaluations, current_metrics):
        return prompt, new_metrics[:5]  # プロンプトと最大5つの新しいメトリクスを返す
 
 def main():
-    st.title("Strategy Refiner")
+    st.title("Idea Refiner")
 
     # セッション状態の初期化
     if 'theme' not in st.session_state:
